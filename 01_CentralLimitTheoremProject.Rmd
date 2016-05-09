@@ -61,4 +61,46 @@ plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=mean(MeanOfDistrib), sd=sq
 print(plot1)
 ```
 
+```{r cache=TRUE}
+
+set.seed(1000)
+lambda <- 0.2 ## Set lambda as per instructions
+
+## Distibution size
+DisSize <- 40 
+
+## number of simulations
+NoOfSim <- 100000
+
+MeanOfDistrib <- 0
+for (i in 1 : NoOfSim) 
+  MeanOfDistrib <- c(MeanOfDistrib, mean(rexp(DisSize,lambda)))
+hist(MeanOfDistrib,col="red",main="Distribution of averages of exponential distribution")
+```
+
+
+
+```{r}
+varxp <- ((1/lambda)^2)/DisSize ## theoretical variance
+varmean <- var(MeanOfDistrib) ## variance of the means
+Mean_theoritical <- 1/lambda
+```
+```{r echo= FALSE}
+print(sprintf("The theoretical mean is %f while mean of means is %f",Mean_theoritical,mean(MeanOfDistrib)))
+print(sprintf("The theoretical variance is %f while variance of means %f",varxp,varmean))
+```
+```{r}
+
+head(MeanOfDistrib)
+summary(MeanOfDistrib)
+describe(MeanOfDistrib)
+plotdata <- data.frame(MeanOfDistrib)
+plot1 <- ggplot(plotdata,aes(x = MeanOfDistrib))
+plot1 <- plot1 +geom_histogram(aes(y=..density..), colour="red",fill="white")
+plot1<-plot1+labs(title="Distribution of Means of exponential distribution ", y="Density")
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=1/lambda, sd=sqrt(varxp)),color = "blue", size = 1.0)
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=mean(MeanOfDistrib), sd=sqrt(varmean)),color = "green", size = 1.0)
+print(plot1)
+```
+
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
