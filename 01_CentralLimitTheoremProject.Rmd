@@ -1,0 +1,64 @@
+---
+title: "Comparison of Exponential Distribution against Central Limit Theorem"
+author: "Sooraj Raju"
+date: "May 8, 2016"
+output: pdf_document
+---
+
+# 1. Overview
+
+The objective of this project is to investigate the Exponential Distribution and compare it against Central Limit Theorem. 
+
+Central Limit Theorem:
+In probability theory, the central limit theorem (CLT) states that, given certain conditions, the arithmetic mean of a sufficiently large number of iterates of independent random variables, each with a well-defined expected value and well-defined variance, will be approximately normally distributed, regardless of the underlying distribution
+
+The exponential distribution will be simulated in R with rexp(n, lambda) where lambda is the rate parameter. In theory the mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda.
+
+We will set n = 40 and set lambda = 0.2 for all of the simulations and compare the resulting distribution of the smaple averages to the theory for 1000 simulations.
+```{r, results='hide', message=FALSE, warning=FALSE }
+library(ggplot2)
+library(psych)
+```
+```{r}
+
+set.seed(1000)
+lambda <- 0.2 ## Set lambda as per instructions
+
+## Distibution size
+DisSize <- 40 
+
+## number of simulations
+NoOfSim <- 1000 
+
+MeanOfDistrib <- 0
+for (i in 1 : NoOfSim) 
+  MeanOfDistrib <- c(MeanOfDistrib, mean(rexp(DisSize,lambda)))
+hist(MeanOfDistrib,col="red",main="Distribution of averages of exponential distribution")
+```
+
+
+
+```{r}
+varxp <- ((1/lambda)^2)/DisSize ## theoretical variance
+varmean <- var(MeanOfDistrib) ## variance of the means
+Mean_theoritical <- 1/lambda
+```
+```{r echo= FALSE}
+print(sprintf("The theoretical mean is %f while mean of means is %f",Mean_theoritical,mean(MeanOfDistrib)))
+print(sprintf("The theoretical variance is %f while variance of means %f",varxp,varmean))
+```
+```{r}
+
+head(MeanOfDistrib)
+summary(MeanOfDistrib)
+describe(MeanOfDistrib)
+plotdata <- data.frame(MeanOfDistrib)
+plot1 <- ggplot(plotdata,aes(x = MeanOfDistrib))
+plot1 <- plot1 +geom_histogram(aes(y=..density..), colour="red",fill="white")
+plot1<-plot1+labs(title="Distribution of Means of exponential distribution ", y="Density")
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=1/lambda, sd=sqrt(varxp)),color = "blue", size = 1.0)
+plot1<-plot1 +stat_function(fun=dnorm,args=list( mean=mean(MeanOfDistrib), sd=sqrt(varmean)),color = "green", size = 1.0)
+print(plot1)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
